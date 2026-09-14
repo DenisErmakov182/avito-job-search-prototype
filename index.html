@@ -235,15 +235,15 @@
   .cat-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
   .cat-row::-webkit-scrollbar{display:none;}
   .cat-card{
-    flex:none; width:250px; background:var(--surface-2); border-radius:var(--radius-md);
-    padding:12px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+    flex:none; height:80px; background:var(--surface-2); border-radius:var(--radius-md);
+    padding:12px; position:relative; overflow:visible;
     text-align:left; border:none; cursor:pointer;
     font-family:var(--font-ui);
   }
-  .cat-card .info{min-width:0;display:flex;flex-direction:column;}
-  .cat-card .icon-ill{flex:none;width:40px;height:auto;max-height:50px;margin-top:2px;}
-  .cat-card .name{font-size:16px;font-weight:600;letter-spacing:-.32px;color:var(--ink);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .cat-card .n{font-size:13px;color:var(--ink-3);letter-spacing:.03px;display:block;white-space:nowrap;}
+  .cat-card .name{font-size:16px;font-weight:600;letter-spacing:-.32px;color:var(--ink);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  .cat-card .n{font-size:12.5px;color:var(--ink-3);letter-spacing:.03px;display:block;white-space:nowrap;}
+  .cat-card .icon-ill{position:absolute;top:-5px;right:4px;display:block;}
+  .cat-row{padding-top:6px;margin-top:-6px;}
 
   .job-card{padding:0 4px;}
   .job-price{padding:2px 12px 0;display:flex;align-items:flex-start;gap:8px;}
@@ -522,21 +522,26 @@
     empty: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-9.3-9C1.2 7.7 3 4.5 6.4 4.5c1.9 0 3.3 1 4.6 2.6C12.3 5.5 13.7 4.5 15.6 4.5c3.4 0 5.2 3.2 3.7 6.5C17 15.6 12 20 12 20z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
   };
 
+  var ICON_DIMS = {
+    hammer:[42,43], box:[45,45], bike:[40,43], truck:[45,45],
+    chair:[44,54], graph:[39,51], bag:[36,50]
+  };
+
   var CATEGORIES = {
     novice: [
-      {name:"Ремонт", n:"1010 вакансий", rate:"1200₽/час, ср. ставка", icon:"hammer"},
-      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", icon:"box"},
-      {name:"Вело-курьер", n:"23 вакансии", rate:"200₽/км, ср. ставка", icon:"bike"},
-      {name:"Авто-курьер", n:"40 вакансий", rate:"1000₽/день, ср. ставка", icon:"truck"},
-      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", icon:"chair"},
-      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", icon:"graph"},
-      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", icon:"bag"}
+      {name:"Ремонт", n:"1010 вакансий", rate:"1200₽/час, ср. ставка", icon:"hammer", w:168},
+      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", icon:"box", w:150},
+      {name:"Вело-курьер", n:"23 вакансии", rate:"200₽/км, ср. ставка", icon:"bike", w:177},
+      {name:"Авто-курьер", n:"40 вакансий", rate:"1000₽/день, ср. ставка", icon:"truck", w:177},
+      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", icon:"chair", w:177},
+      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", icon:"graph", w:177},
+      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", icon:"bag", w:193}
     ],
     active: [
-      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", icon:"graph"},
-      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", icon:"chair"},
-      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", icon:"bag"},
-      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", icon:"box"}
+      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", icon:"graph", w:177},
+      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", icon:"chair", w:177},
+      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", icon:"bag", w:193},
+      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", icon:"box", w:150}
     ]
   };
 
@@ -684,10 +689,11 @@
   function renderCategories(){
     var cats = CATEGORIES[state.persona];
     $("catRow").innerHTML = cats.map(function(c, i){
-      return '<button class="cat-card" data-cat="'+i+'">'+
-        '<span class="info"><p class="name">'+c.name+'</p>'+
-        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span></span>'+
-        '<img class="icon-ill" src="assets/'+c.icon+'.png" alt="">'+
+      var d = ICON_DIMS[c.icon];
+      return '<button class="cat-card" data-cat="'+i+'" style="width:'+c.w+'px;">'+
+        '<p class="name">'+c.name+'</p>'+
+        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
+        '<img class="icon-ill" src="assets/'+c.icon+'.png" width="'+d[0]+'" height="'+d[1]+'" alt="">'+
         '</button>';
     }).join('');
     Array.prototype.forEach.call(document.querySelectorAll("#catRow [data-cat]"), function(btn, i){
@@ -698,10 +704,11 @@
   function catListHTML(){
     var cats = CATEGORIES[state.persona];
     return '<div class="cat-row" style="flex-wrap:wrap;overflow:visible;">' + cats.concat(CATEGORIES.novice.filter(function(c){return !cats.find(function(x){return x.name===c.name;});})).map(function(c){
+      var d = ICON_DIMS[c.icon];
       return '<div class="cat-card" style="width:100%;">'+
-        '<span class="info"><p class="name">'+c.name+'</p>'+
-        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span></span>'+
-        '<img class="icon-ill" src="assets/'+c.icon+'.png" alt="">'+
+        '<p class="name">'+c.name+'</p>'+
+        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
+        '<img class="icon-ill" src="assets/'+c.icon+'.png" width="'+d[0]+'" height="'+d[1]+'" alt="">'+
         '</div>';
     }).join('') + '</div>';
   }
