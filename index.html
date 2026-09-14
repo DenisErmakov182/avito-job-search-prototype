@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Первый экран «Работа» — кликабельный прототип</title>
+<meta name="description" content="Интерактивный прототип редизайна первого экрана категории «Работа» на Авито — тестовое задание.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chrome-bg:#eef1f6;
+    --chrome-surface:#ffffff;
+    --chrome-text:#12151b;
+    --chrome-muted:#5b6472;
+    --chrome-accent:#2f6fe4;
+    --chrome-accent-ink:#ffffff;
+    --chrome-border:#dde3ec;
+    --chrome-shadow: 0 30px 60px -25px rgba(18,21,27,.28), 0 2px 6px rgba(18,21,27,.06);
+
+    /* device / product tokens (Figma) — fixed light UI, mirrors the actual design */
+    --ink:#1e2939;
+    --ink-2:#4a5565;
+    --ink-3:#99a1af;
+    --ink-inverse:#ffffff;
+    --surface-2:#f3f4f6;
+    --surface-info:#dbeafe;
+    --surface-inverse:#101828;
+    --accent:#0099f7;
+    --accent-2:#51a2ff;
+    --danger:#fb3b49;
+    --border-soft:rgba(3,7,18,.08);
+    --radius-xs:6px;
+    --radius-md:14px;
+    --radius-lg:16px;
+    --font-ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,sans-serif;
+    --font-display:'Manrope',var(--font-ui);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --chrome-bg:#14161b;
+      --chrome-surface:#1c1f26;
+      --chrome-text:#f2f3f5;
+      --chrome-muted:#9aa2b1;
+      --chrome-accent:#5b96f5;
+      --chrome-accent-ink:#0c1220;
+      --chrome-border:#2a2e37;
+      --chrome-shadow: 0 30px 60px -25px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --chrome-bg:#14161b;
+    --chrome-surface:#1c1f26;
+    --chrome-text:#f2f3f5;
+    --chrome-muted:#9aa2b1;
+    --chrome-accent:#5b96f5;
+    --chrome-accent-ink:#0c1220;
+    --chrome-border:#2a2e37;
+    --chrome-shadow: 0 30px 60px -25px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--chrome-bg);
+    color:var(--chrome-text);
+    font-family:var(--font-ui);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:48px 24px 96px;
+    display:grid;
+    grid-template-columns: minmax(0,460px) 375px;
+    gap:56px;
+    align-items:start;
+  }
+  @media (max-width: 900px){
+    .wrap{grid-template-columns:1fr; justify-items:center; padding:32px 16px 72px;}
+  }
+
+  .intro{padding-top:8px;}
+  .eyebrow{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--chrome-accent);
+    margin:0 0 14px;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:clamp(26px,3.2vw,34px);
+    line-height:1.15;
+    letter-spacing:-.01em;
+    margin:0 0 16px;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:16px;
+    line-height:1.6;
+    color:var(--chrome-muted);
+    max-width:52ch;
+    margin:0 0 28px;
+  }
+
+  .persona-switch{
+    display:inline-flex;
+    padding:4px;
+    background:var(--chrome-surface);
+    border:1px solid var(--chrome-border);
+    border-radius:14px;
+    gap:4px;
+    margin-bottom:14px;
+  }
+  .persona-switch button{
+    font-family:var(--font-ui);
+    font-size:14px;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:10px;
+    border:none;
+    background:transparent;
+    color:var(--chrome-muted);
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .persona-switch button.is-active{
+    background:var(--chrome-accent);
+    color:var(--chrome-accent-ink);
+  }
+  .persona-note{
+    font-size:13px;
+    color:var(--chrome-muted);
+    line-height:1.55;
+    max-width:44ch;
+    margin:0 0 30px;
+    padding:12px 14px;
+    background:var(--chrome-surface);
+    border:1px solid var(--chrome-border);
+    border-left:3px solid var(--chrome-accent);
+    border-radius:10px;
+  }
+
+  .checklist{list-style:none;margin:0 0 32px;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .checklist li{
+    display:flex;gap:10px;align-items:flex-start;
+    font-size:14px;line-height:1.5;color:var(--chrome-text);
+  }
+  .checklist svg{flex:none;margin-top:2px;color:var(--chrome-accent);}
+  .checklist b{font-weight:700;}
+
+  .meta-row{
+    display:flex;gap:10px;flex-wrap:wrap;
+    font-size:13px;color:var(--chrome-muted);
+    border-top:1px solid var(--chrome-border);
+    padding-top:18px;
+  }
+  .meta-row a{color:var(--chrome-accent);text-decoration:none;font-weight:600;}
+  .meta-row a:hover{text-decoration:underline;}
+
+  /* ---------- Phone chrome ---------- */
+  .phone-stage{
+    position:sticky; top:32px;
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+  }
+  .phone{
+    width:375px; height:812px;
+    background:#000;
+    border-radius:56px;
+    padding:14px;
+    box-shadow:var(--chrome-shadow);
+    position:relative;
+  }
+  .phone-screen{
+    width:100%; height:100%;
+    background:#fff;
+    border-radius:42px;
+    overflow:hidden;
+    position:relative;
+    font-family:var(--font-ui);
+    color:var(--ink);
+  }
+  .statusbar{
+    position:absolute; top:0; left:0; right:0; height:52px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 26px; z-index:40; pointer-events:none;
+  }
+  .statusbar .time{font-size:15px;font-weight:600;letter-spacing:-.2px;color:#000;}
+  .statusbar .icons{display:flex;gap:6px;align-items:center;color:#000;}
+  .dynamic-island{
+    position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:100px; height:30px; background:#000; border-radius:20px; z-index:50;
+  }
+
+  .tabbar-hint{font-size:12px;color:var(--chrome-muted);text-align:center;max-width:320px;}
+  .restart-btn{
+    font-family:var(--font-ui);font-size:13px;font-weight:600;
+    color:var(--chrome-muted); background:none; border:1px solid var(--chrome-border);
+    padding:8px 14px;border-radius:10px;cursor:pointer;
+  }
+  .restart-btn:hover{border-color:var(--chrome-accent);color:var(--chrome-accent);}
+
+  /* ---------- App content ---------- */
+  .app{
+    position:absolute; inset:0; top:52px; bottom:0;
+    display:flex; flex-direction:column;
+  }
+  .scroll{
+    flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    padding-bottom:12px;
+  }
+  .scroll::-webkit-scrollbar{width:0;}
+
+  .search-row{display:flex;align-items:center;gap:8px;padding:0 16px;height:48px;}
+  .icon-btn{
+    flex:none; width:24px;height:24px; display:flex;align-items:center;justify-content:center;
+    background:none;border:none;padding:0;color:var(--ink);cursor:pointer;
+  }
+  .search-box{
+    flex:1; height:48px; background:var(--surface-2); border-radius:var(--radius-md);
+    display:flex; align-items:center; gap:8px; padding:0 12px; color:var(--ink-3);
+    font-size:16px; letter-spacing:-.3px; border:none; cursor:pointer; text-align:left;
+    font-family:var(--font-ui);
+  }
+
+  .tabs-row{display:flex;padding:0 16px;margin-top:16px;}
+  .tab-item{flex:1;text-align:center;padding-top:2px;padding-bottom:9px;position:relative;
+    font-size:16px;font-weight:600;letter-spacing:-.3px;color:var(--ink-3);
+    background:none;border:none;cursor:pointer;font-family:var(--font-ui);}
+  .tab-item.is-active{color:var(--ink-2);}
+  .tab-item::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#e5e7eb;}
+  .tab-item.is-active::after{height:3px;background:var(--ink-3);}
+
+  .filters-row{
+    display:flex; gap:4px; padding:12px 16px 0; overflow-x:auto; scrollbar-width:none;
+  }
+  .filters-row::-webkit-scrollbar{display:none;}
+  .fbtn{
+    flex:none; height:28px; display:flex;align-items:center;justify-content:center;
+    background:var(--surface-2); border-radius:var(--radius-xs); border:none; color:var(--ink);
+    padding:0 8px; gap:4px; font-size:13px; letter-spacing:.03px; cursor:pointer; font-family:var(--font-ui);
+    white-space:nowrap;
+  }
+  .fbtn.icon-only{width:28px;padding:0;}
+  .fbtn .x{color:var(--ink-3);display:flex;}
+  .fbtn .chev{color:var(--ink-3);display:flex;}
+
+  .highlight-wrap{padding:16px 16px 0;}
+  .highlight-card{
+    background:var(--surface-info); border-radius:var(--radius-lg); padding:16px;
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .highlight-title{font-size:16px;font-weight:600;letter-spacing:-.32px;line-height:20px;color:var(--ink);margin:0 0 8px;}
+  .highlight-title a{color:var(--accent-2);text-decoration:underline;text-decoration-skip-ink:none;}
+  .highlight-sub{font-size:13px;line-height:16px;color:var(--ink-2);letter-spacing:.03px;margin:0;}
+  .highlight-btn{
+    background:var(--surface-inverse); color:#fff; border:none; border-radius:12px;
+    padding:10px 12px; font-size:16px; letter-spacing:-.32px; cursor:pointer; width:100%;
+    font-family:var(--font-ui);
+  }
+
+  .section{padding:20px 16px 0;}
+  .section-head{display:flex;align-items:center;justify-content:space-between;padding-left:4px;margin-bottom:12px;}
+  .section-title{font-size:22px;font-weight:700;letter-spacing:-.7px;margin:0;color:var(--ink);}
+  .see-all{
+    background:var(--surface-2); border:none; border-radius:12px; color:var(--ink-3);
+    font-size:13px; padding:4px 4px 4px 8px; display:flex; align-items:center; gap:0; cursor:pointer;
+    font-family:var(--font-ui);
+  }
+
+  .cat-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+  .cat-row::-webkit-scrollbar{display:none;}
+  .cat-card{
+    flex:none; width:158px; background:var(--surface-2); border-radius:var(--radius-md);
+    padding:12px; position:relative; overflow:hidden; text-align:left; border:none; cursor:pointer;
+    font-family:var(--font-ui);
+  }
+  .cat-card .emoji{position:absolute;right:2px;top:-2px;font-size:34px;filter:saturate(1.05);}
+  .cat-card .name{font-size:16px;font-weight:600;letter-spacing:-.32px;color:var(--ink);margin:0 0 4px;}
+  .cat-card .n{font-size:13px;color:var(--ink-3);letter-spacing:.03px;display:block;}
+
+  .job-card{padding:0 4px;}
+  .job-price{padding:2px 12px 0;display:flex;align-items:flex-start;gap:8px;}
+  .job-title{font-size:17px;font-weight:600;letter-spacing:-.43px;line-height:22px;color:var(--ink);margin:0;flex:1;}
+  .heart-btn{flex:none;background:none;border:none;color:var(--ink-3);cursor:pointer;padding-top:2px;}
+  .heart-btn.is-fav{color:var(--danger);}
+  .job-line{font-size:17px;color:var(--ink-2);letter-spacing:-.43px;line-height:22px;padding:0 12px;margin:2px 0 0;}
+  .job-desc{font-size:15px;color:var(--ink-2);line-height:19px;padding:6px 12px 0;margin:0;}
+  .job-marks{padding:10px 12px 0;display:flex;flex-direction:column;gap:2px;}
+  .job-mark{display:flex;align-items:center;gap:4px;font-size:15px;color:var(--ink);line-height:19px;}
+  .job-mark svg{flex:none;color:var(--accent);}
+  .job-created{font-size:15px;color:var(--ink-3);padding:8px 12px 0;margin:0;}
+  .job-actions{display:flex;gap:8px;padding:14px 12px 4px;}
+  .job-actions button{
+    flex:1; background:var(--surface-2); border:none; border-radius:12px; padding:9px 12px;
+    font-size:16px; letter-spacing:-.32px; color:var(--ink); cursor:pointer; font-family:var(--font-ui);
+  }
+  .job-actions button.primary{background:var(--surface-inverse);color:#fff;}
+  .job-sep{height:1px;background:var(--border-soft);margin:6px 16px 0;}
+
+  /* Sticky quick actions + tab bar */
+  .quickbar{
+    display:flex; gap:10px; padding:8px 16px 12px;
+    border-top:1.2px solid var(--border-soft); background:#fff;
+  }
+  .qbtn{
+    flex:1; background:var(--surface-2); border:none; border-radius:16px; padding:8px 12px;
+    display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; position:relative;
+    font-family:var(--font-ui);
+  }
+  .qbtn svg{color:var(--ink);}
+  .qbtn span{font-size:11px;letter-spacing:.15px;color:var(--ink);}
+  .qbtn .badge{
+    position:absolute; top:2px; right:20%; min-width:15px; height:15px; padding:0 3px;
+    background:var(--danger); color:#fff; border-radius:8px; font-size:10px; font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .tabbar{border-top:.5px solid #ebeae8;background:#fff;}
+  .tabs{display:flex;justify-content:space-between;padding:6px 0 0;}
+  .tabitem{
+    flex:1; display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 0 6px;
+    background:none;border:none;cursor:pointer;position:relative; font-family:var(--font-ui);
+  }
+  .tabitem svg{color:#858585;}
+  .tabitem.is-active svg{color:var(--accent);}
+  .tabitem span{font-size:11px;color:#858585;}
+  .tabitem.is-active span{color:var(--accent);}
+  .tabitem .badge{
+    position:absolute; top:-2px; right:22%; min-width:15px; height:15px; padding:0 3px;
+    background:var(--danger); color:#fff; border-radius:8px; font-size:10px; font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .home-indicator{height:20px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;}
+  .home-indicator i{width:134px;height:5px;border-radius:3px;background:#000;display:block;}
+
+  /* Overlays: full screens + sheets */
+  .overlay{
+    position:absolute; inset:0; background:#fff; z-index:60;
+    transform:translateX(100%); transition:transform .32s cubic-bezier(.32,.72,0,1);
+    display:flex; flex-direction:column;
+  }
+  .overlay.is-open{transform:translateX(0);}
+  .overlay-header{
+    display:flex; align-items:center; gap:12px; padding:58px 16px 12px; flex:none;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .overlay-title{font-size:17px;font-weight:600;letter-spacing:-.43px;margin:0;color:var(--ink);}
+  .overlay-body{flex:1;overflow-y:auto;padding:16px;}
+  .overlay-body::-webkit-scrollbar{display:none;}
+
+  .sheet-backdrop{
+    position:absolute; inset:0; background:rgba(16,24,40,.4); z-index:70; opacity:0; pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .sheet-backdrop.is-open{opacity:1;pointer-events:auto;}
+  .sheet{
+    position:absolute; left:0; right:0; bottom:0; background:#fff; z-index:71;
+    border-radius:20px 20px 0 0; padding:8px 16px 26px; transform:translateY(100%);
+    transition:transform .28s cubic-bezier(.32,.72,0,1);
+  }
+  .sheet.is-open{transform:translateY(0);}
+  .sheet .grip{width:36px;height:4px;border-radius:2px;background:var(--surface-2);margin:2px auto 14px;}
+  .sheet h3{font-size:17px;font-weight:600;margin:0 0 12px;color:var(--ink);}
+  .sheet-option{
+    display:flex; align-items:center; justify-content:space-between; width:100%;
+    background:none; border:none; padding:13px 2px; font-size:16px; color:var(--ink);
+    border-bottom:1px solid var(--border-soft); cursor:pointer; font-family:var(--font-ui); text-align:left;
+  }
+  .sheet-option:last-of-type{border-bottom:none;}
+  .sheet-option svg{color:var(--accent);opacity:0;}
+  .sheet-option.is-selected svg{opacity:1;}
+
+  .kabinet-tabs{display:flex;gap:22px;padding:0 16px;border-bottom:1px solid var(--border-soft);}
+  .ktab{
+    background:none;border:none;padding:12px 0 10px;font-size:15px;font-weight:600;color:var(--ink-3);
+    cursor:pointer;position:relative;font-family:var(--font-ui);
+  }
+  .ktab.is-active{color:var(--ink);}
+  .ktab.is-active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ink);}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;color:var(--ink-2);margin-bottom:6px;}
+  .field .val, .field input{
+    width:100%; background:var(--surface-2); border:none; border-radius:10px; padding:12px;
+    font-size:15px; color:var(--ink); font-family:var(--font-ui);
+  }
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{
+    background:var(--surface-2); border:1px solid transparent; border-radius:10px; padding:9px 14px;
+    font-size:14px; color:var(--ink); cursor:pointer; font-family:var(--font-ui);
+  }
+  .pill.is-selected{background:#eaf3ff;border-color:var(--accent);color:var(--accent);font-weight:600;}
+
+  .empty{padding:60px 24px;text-align:center;color:var(--ink-3);font-size:14px;line-height:1.6;}
+  .empty svg{color:var(--ink-3);margin-bottom:10px;}
+
+  .response-row{
+    display:flex; gap:10px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--border-soft);
+  }
+  .response-row .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none;}
+  .response-row b{display:block;font-size:15px;color:var(--ink);}
+  .response-row span{font-size:13px;color:var(--ink-3);}
+
+  .chat-msg{max-width:78%;padding:10px 12px;border-radius:16px;font-size:15px;line-height:20px;margin-bottom:8px;}
+  .chat-msg.them{background:var(--surface-2);color:var(--ink);border-bottom-left-radius:4px;}
+  .chat-msg.me{background:var(--surface-inverse);color:#fff;margin-left:auto;border-bottom-right-radius:4px;}
+  .chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border-soft);}
+  .chat-input-row input{flex:1;background:var(--surface-2);border:none;border-radius:20px;padding:10px 14px;font-size:15px;font-family:var(--font-ui);}
+  .chat-input-row button{background:var(--surface-inverse);color:#fff;border:none;border-radius:20px;padding:0 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-ui);}
+
+  .toast{
+    position:absolute; left:50%; bottom:104px; transform:translate(-50%,12px); z-index:90;
+    background:var(--surface-inverse); color:#fff; padding:10px 16px; border-radius:12px; font-size:13.5px;
+    opacity:0; transition:opacity .2s ease, transform .2s ease; pointer-events:none; white-space:nowrap;
+    max-width:300px; text-align:center; white-space:normal;
+  }
+  .toast.is-open{opacity:1;transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="intro">
+    <p class="eyebrow">Тестовое · Авито «Работа»</p>
+    <h1>Кликабельный прототип первого экрана</h1>
+    <p class="lede">Живая HTML-версия макета из Figma — не картинка, а рабочий интерфейс. Переключайте сценарий ниже: у «Новичка» и «Активного» пользователя разный верхний блок, разные категории и сохранённые фильтры.</p>
+
+    <div class="persona-switch" role="tablist" aria-label="Сценарий">
+      <button type="button" data-persona="novice" class="is-active">Новичок</button>
+      <button type="button" data-persona="active">Активный</button>
+    </div>
+    <p class="persona-note" id="personaNote"></p>
+
+    <ul class="checklist">
+      <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Тапните по вакансии, категории или фильтру — экраны настоящие, не заглушки</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Панель «Резюме / Отклики / Кабинет» и таб-бар снизу — зафиксированы, не скроллятся с контентом</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>«Откликнуться» реально добавляет запись в «Кабинет → Отклики» и красный счётчик</span></li>
+    </ul>
+
+    <div class="meta-row">
+      <span>Дизайн — Figma</span><span>·</span>
+      <a href="https://www.figma.com/design/ZuNyQIOdscj99fMpPveCSb/%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B5-%D0%B0%D0%B2%D0%B8%D1%82%D0%BE" target="_blank" rel="noopener">Открыть исходный файл →</a>
+    </div>
+  </div>
+
+  <div class="phone-stage">
+    <div class="phone">
+      <div class="phone-screen" id="phoneScreen">
+        <div class="statusbar">
+          <div class="time">9:41</div>
+          <div class="icons">
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="currentColor"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="currentColor"/><rect x="10" y="2" width="3" height="10" rx="0.5" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+            <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="21" height="12" rx="3.5" stroke="currentColor"/><rect x="2" y="2" width="18" height="9" rx="2" fill="currentColor"/><rect x="23" y="4" width="2" height="5" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+        <div class="dynamic-island"></div>
+
+        <div class="app">
+          <div class="scroll" id="homeScroll">
+            <!-- search -->
+            <div class="search-row">
+              <button class="icon-btn" id="btnBack" aria-label="Назад">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="search-box" id="btnSearch">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Поиск по вакансиям</span>
+              </button>
+            </div>
+
+            <div class="tabs-row">
+              <button class="tab-item is-active" id="tabSearchRole">Ищу работу</button>
+              <button class="tab-item" id="tabHireRole">Ищу сотрудников</button>
+            </div>
+
+            <div class="filters-row" id="filtersRow"></div>
+
+            <div class="highlight-wrap">
+              <div class="highlight-card">
+                <div>
+                  <p class="highlight-title" id="hlTitle"></p>
+                  <p class="highlight-sub" id="hlSub"></p>
+                </div>
+                <button class="highlight-btn" id="hlBtn"></button>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-head">
+                <h2 class="section-title">Категории</h2>
+                <button class="see-all" id="btnAllCats">Все
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="cat-row" id="catRow"></div>
+            </div>
+
+            <div class="section">
+              <div class="section-head">
+                <h2 class="section-title">Вакансии</h2>
+                <button class="see-all" id="btnAllJobs">Все
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            <div id="jobCardMount"></div>
+          </div>
+
+          <!-- placeholder tab views -->
+          <div class="scroll" id="favScroll" style="display:none;"></div>
+          <div class="scroll" id="adsScroll" style="display:none;"></div>
+          <div class="scroll" id="msgScroll" style="display:none;"></div>
+          <div class="scroll" id="profScroll" style="display:none;"></div>
+
+          <div class="quickbar">
+            <button class="qbtn" id="qResume">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span>Резюме</span>
+            </button>
+            <button class="qbtn" id="qResponses">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              <span>Отклики</span>
+              <span class="badge" id="responsesBadge" style="display:none;">0</span>
+            </button>
+            <button class="qbtn" id="qCabinet">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 17c1.3-3.2 4-4.8 6.5-4.8s5.2 1.6 6.5 4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span>Кабинет</span>
+            </button>
+          </div>
+
+          <div class="tabbar">
+            <div class="tabs">
+              <button class="tabitem is-active" data-tab="search">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <span>Поиск</span>
+              </button>
+              <button class="tabitem" data-tab="fav">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-9.3-9C1.2 7.7 3 4.5 6.4 4.5c1.9 0 3.3 1 4.6 2.6C12.3 5.5 13.7 4.5 15.6 4.5c3.4 0 5.2 3.2 3.7 6.5C17 15.6 12 20 12 20z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                <span>Избранное</span>
+              </button>
+              <button class="tabitem" data-tab="ads">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Объявления</span>
+              </button>
+              <button class="tabitem" data-tab="msg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7A2.5 2.5 0 0 1 17.5 16H10l-4 3.5V16H6.5A2.5 2.5 0 0 1 4 13.5v-7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                <span>Сообщения</span>
+                <span class="badge">7</span>
+              </button>
+              <button class="tabitem" data-tab="prof">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.5" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 19c1.6-3.8 4.7-5.7 7.5-5.7s5.9 1.9 7.5 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Профиль</span>
+                <span class="badge">12</span>
+              </button>
+            </div>
+            <div class="home-indicator"><i></i></div>
+          </div>
+        </div>
+
+        <!-- overlays -->
+        <div class="overlay" id="ovJob"></div>
+        <div class="overlay" id="ovCabinet"></div>
+        <div class="overlay" id="ovChat"></div>
+        <div class="overlay" id="ovPrefs"></div>
+        <div class="overlay" id="ovCats"></div>
+        <div class="overlay" id="ovJobs"></div>
+
+        <div class="sheet-backdrop" id="sheetBackdrop"></div>
+        <div class="sheet" id="sheet"></div>
+
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+    <p class="tabbar-hint">375×812 — фактический размер макета в Figma</p>
+    <button class="restart-btn" id="btnRestart">Сбросить прототип</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var ICONS = {
+    chev: '<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    x: '<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    sliders: '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 5h12M4 10h12M4 15h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="5" r="1.6" fill="#fff" stroke="currentColor" stroke-width="1.4"/><circle cx="13" cy="10" r="1.6" fill="#fff" stroke="currentColor" stroke-width="1.4"/><circle cx="7" cy="15" r="1.6" fill="#fff" stroke="currentColor" stroke-width="1.4"/></svg>',
+    sort: '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M6 4v12M6 16l-2.5-2.5M6 16l2.5-2.5M14 16V4M14 4l-2.5 2.5M14 4l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    check: '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    verified: '<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.1 1.1 2.3-.4 1.2 2 2 1.2-.4 2.3L18 10l-1.1 2.1.4 2.3-2 1.2-1.2 2-2.3-.4L10 18l-2.1-1.1-2.3.4-1.2-2-2-1.2.4-2.3L2 10l1.1-2.1-.4-2.3 2-1.2 1.2-2 2.3.4L10 2z" fill="#0099f7"/><path d="M6.8 10.2l2.1 2.1 4.3-4.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    chat: '<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h9A2.5 2.5 0 0 1 17 5.5v6A2.5 2.5 0 0 1 14.5 14H9l-3.5 3v-3H5.5A2.5 2.5 0 0 1 3 11.5v-6z" stroke="#0099f7" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    pin: '<svg width="14" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 18s6-5.7 6-10.3A6 6 0 0 0 4 7.7C4 12.3 10 18 10 18z" stroke="#0099f7" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="7.5" r="2" stroke="#0099f7" stroke-width="1.5"/></svg>',
+    heart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-9.3-9C1.2 7.7 3 4.5 6.4 4.5c1.9 0 3.3 1 4.6 2.6C12.3 5.5 13.7 4.5 15.6 4.5c3.4 0 5.2 3.2 3.7 6.5C17 15.6 12 20 12 20z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    heartFilled: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7-4.4-9.3-9C1.2 7.7 3 4.5 6.4 4.5c1.9 0 3.3 1 4.6 2.6C12.3 5.5 13.7 4.5 15.6 4.5c3.4 0 5.2 3.2 3.7 6.5C17 15.6 12 20 12 20z"/></svg>',
+    arrowLeft: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    empty: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-9.3-9C1.2 7.7 3 4.5 6.4 4.5c1.9 0 3.3 1 4.6 2.6C12.3 5.5 13.7 4.5 15.6 4.5c3.4 0 5.2 3.2 3.7 6.5C17 15.6 12 20 12 20z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
+  };
+
+  var CATEGORIES = {
+    novice: [
+      {name:"Ремонт", n:"1010 вакансий", rate:"1200₽/час, ср. ставка", emoji:"🔨"},
+      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", emoji:"📦"},
+      {name:"Вело-курьер", n:"23 вакансии", rate:"200₽/км, ср. ставка", emoji:"🚲"},
+      {name:"Авто-курьер", n:"40 вакансий", rate:"1000₽/день, ср. ставка", emoji:"🚚"},
+      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", emoji:"🪑"},
+      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", emoji:"📈"},
+      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", emoji:"🛍️"}
+    ],
+    active: [
+      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", emoji:"📈"},
+      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", emoji:"🪑"},
+      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", emoji:"🛍️"},
+      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", emoji:"📦"}
+    ]
+  };
+
+  var JOBS = [
+    {id:1, title:"Водитель-курьер на автомобиле компании (Парголово)", price:"1000–1500 ₽ за смену", tags:"Плавающий · Выплаты каждый день · Без опыта",
+      employer:"Яндекс еда", verified:true, review:"Есть мнения о работодателе", loc:"Динамо, 7 мин.", created:"Создано вчера в 11:20", category:"Доставка"},
+    {id:2, title:"Комплектовщик на складе маркетплейса", price:"90 000–110 000 ₽ в месяц", tags:"Полный день · Официально · Без опыта",
+      employer:"Wildberries", verified:true, review:"128 откликов на этой неделе", loc:"Текстильщики, 12 мин.", created:"Создано сегодня в 08:40", category:"Маркетплейсы"},
+    {id:3, title:"Менеджер по продажам (входящие заявки)", price:"70 000 ₽ + % от сделок", tags:"График 5/2 · Офис · Обучение предоставляется",
+      employer:"ГК Автолидер", verified:false, review:"Новый работодатель на Авито", loc:"Юго-Западная, 5 мин.", created:"Создано 2 дня назад", category:"Продажи"},
+    {id:4, title:"Оператор call-центра", price:"55 000–65 000 ₽ в месяц", tags:"Сменный график · Удалённо · Без опыта",
+      employer:"Skyeng", verified:true, review:"Есть мнения о работодателе", loc:"Удалённо", created:"Создано 3 дня назад", category:"Офис"}
+  ];
+
+  var FILTER_OPTIONS = {
+    "Москва": ["Москва","Санкт-Петербург","Казань","Показать вакансии по всей России"],
+    "Тип занятости": ["Полная занятость","Подработка","Сменный график","Вахта"],
+    "Опыт": ["Без опыта","1–3 года","3–6 лет","Более 6 лет"],
+    "Расстояние": ["Рядом с домом (до 5 км)","До 10 км","До 30 км","Не важно"]
+  };
+
+  var state = {
+    persona: "novice",
+    favorites: {},
+    responses: [],
+    filters: {
+      novice: [
+        {key:"Москва", selected:false},
+        {key:"Тип занятости", selected:false},
+        {key:"Опыт", selected:false},
+        {key:"Расстояние", selected:false}
+      ],
+      active: [
+        {key:"Менеджер +1", selected:true, locked:true},
+        {key:"Москва", selected:false},
+        {key:"Тип занятости", selected:false},
+        {key:"Опыт", selected:false},
+        {key:"Расстояние", selected:false}
+      ]
+    },
+    kabinetTab: "about",
+    currentTab: "search"
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+  var screen = $("phoneScreen");
+
+  function toast(msg){
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("is-open");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function(){ t.classList.remove("is-open"); }, 1900);
+  }
+
+  function openOverlay(id){ $(id).classList.add("is-open"); }
+  function closeOverlay(id){ $(id).classList.remove("is-open"); }
+
+  function openSheet(html){
+    $("sheet").innerHTML = html;
+    $("sheet").classList.add("is-open");
+    $("sheetBackdrop").classList.add("is-open");
+  }
+  function closeSheet(){
+    $("sheet").classList.remove("is-open");
+    $("sheetBackdrop").classList.remove("is-open");
+  }
+  $("sheetBackdrop").addEventListener("click", closeSheet);
+
+  /* ---------- render: filters ---------- */
+  function renderFilters(){
+    var list = state.filters[state.persona];
+    var html = '<button class="fbtn icon-only" id="fltIcon">' + ICONS.sliders + '</button>';
+    html += '<button class="fbtn icon-only" id="sortIcon">' + ICONS.sort + '</button>';
+    list.forEach(function(f, i){
+      if(f.selected){
+        html += '<button class="fbtn" data-fi="'+i+'">'+f.key+'<span class="x">'+ICONS.x+'</span></button>';
+      } else {
+        html += '<button class="fbtn" data-fi="'+i+'">'+f.key+'<span class="chev">'+ICONS.chev+'</span></button>';
+      }
+    });
+    $("filtersRow").innerHTML = html;
+
+    $("fltIcon").onclick = function(){
+      openSheet('<div class="grip"></div><h3>Все фильтры</h3>' +
+        '<div class="pill-row" style="margin-bottom:6px;">' +
+        ['Полная занятость','Можно из дома','С трудоустройством','Без опыта','Ежедневные выплаты'].map(function(p){return '<span class="pill">'+p+'</span>';}).join('') +
+        '</div><button class="highlight-btn" style="margin-top:18px;" id="applyFilters">Показать вакансии</button>');
+      $("applyFilters").onclick = function(){ closeSheet(); toast("Фильтры применены"); };
+    };
+    $("sortIcon").onclick = function(){
+      openSheet('<div class="grip"></div><h3>Сортировать по</h3>' +
+        ["По актуальности","По зарплате: сначала выше","По релевантности","По расстоянию"].map(function(o,i){
+          return '<button class="sheet-option'+(i===0?' is-selected':'')+'" data-sort="'+i+'">'+o+ICONS.check+'</button>';
+        }).join(''));
+      Array.prototype.forEach.call(document.querySelectorAll("[data-sort]"), function(btn){
+        btn.onclick = function(){
+          closeSheet();
+          toast('Сортировка: ' + btn.textContent.trim());
+        };
+      });
+    };
+
+    Array.prototype.forEach.call(document.querySelectorAll("#filtersRow [data-fi]"), function(btn){
+      btn.onclick = function(){
+        var i = +btn.getAttribute("data-fi");
+        var f = list[i];
+        if(f.selected && !f.locked){
+          f.selected = false; renderFilters(); toast("Фильтр «"+f.key+"» сброшен"); return;
+        }
+        if(f.locked){ toast("«"+f.key+"» — из сохранённого поиска"); return; }
+        var options = FILTER_OPTIONS[f.key] || ["Вариант 1","Вариант 2","Вариант 3"];
+        openSheet('<div class="grip"></div><h3>'+f.key+'</h3>' +
+          options.map(function(o,oi){
+            return '<button class="sheet-option'+(oi===0?' is-selected':'')+'" data-opt="'+oi+'">'+o+ICONS.check+'</button>';
+          }).join(''));
+        Array.prototype.forEach.call(document.querySelectorAll("[data-opt]"), function(btn2){
+          btn2.onclick = function(){
+            f.selected = true;
+            f.key = btn2.textContent.trim();
+            closeSheet(); renderFilters();
+            toast("Выбрано: " + f.key);
+          };
+        });
+      };
+    });
+  }
+
+  /* ---------- render: highlight card ---------- */
+  function renderHighlight(){
+    if(state.persona === "novice"){
+      $("hlTitle").innerHTML = 'Более 10 000 вакансий в <a href="javascript:void(0)">Москве</a>';
+      $("hlSub").textContent = "В среднем каждый день добавляется 200 новых вакансий";
+      $("hlBtn").textContent = "Указать пожелания";
+      $("hlBtn").onclick = openPrefs;
+    } else {
+      $("hlTitle").textContent = "2 работодателя ответили";
+      $("hlSub").textContent = "Перейдите в чат, там можно обсудить детали работы, график и тд.";
+      $("hlBtn").textContent = "Перейти в чат";
+      $("hlBtn").onclick = openChat;
+    }
+  }
+
+  /* ---------- render: categories ---------- */
+  function renderCategories(){
+    var cats = CATEGORIES[state.persona];
+    $("catRow").innerHTML = cats.map(function(c, i){
+      return '<button class="cat-card" data-cat="'+i+'">'+
+        '<div class="emoji">'+c.emoji+'</div>'+
+        '<p class="name">'+c.name+'</p>'+
+        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
+        '</button>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll("#catRow [data-cat]"), function(btn, i){
+      btn.onclick = function(){ toast('Показаны вакансии в категории «'+cats[i].name+'»'); $("homeScroll").querySelector(".section:nth-of-type(2)") && document.getElementById("jobCardMount").scrollIntoView({behavior:"smooth", block:"center"}); };
+    });
+  }
+
+  function catListHTML(){
+    var cats = CATEGORIES[state.persona];
+    return '<div class="cat-row" style="flex-wrap:wrap;overflow:visible;">' + cats.concat(CATEGORIES.novice.filter(function(c){return !cats.find(function(x){return x.name===c.name;});})).map(function(c){
+      return '<div class="cat-card" style="width:47%;">'+
+        '<div class="emoji">'+c.emoji+'</div>'+
+        '<p class="name">'+c.name+'</p>'+
+        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
+        '</div>';
+    }).join('') + '</div>';
+  }
+
+  /* ---------- render: job card (home) ---------- */
+  function jobCardHTML(job, forOverlay){
+    var fav = !!state.favorites[job.id];
+    return (
+      '<div class="job-card">' +
+        '<div class="job-price"><p class="job-title">'+job.title+'</p>'+
+          '<button class="heart-btn'+(fav?' is-fav':'')+'" data-heart="'+job.id+'">'+(fav?ICONS.heartFilled:ICONS.heart)+'</button></div>' +
+        '<p class="job-line">'+job.price+'</p>' +
+        '<p class="job-desc">'+job.tags+'</p>' +
+        '<div class="job-marks">' +
+          '<div class="job-mark">'+ICONS.verified+'<span>'+job.employer+'</span></div>' +
+          '<div class="job-mark">'+ICONS.chat+'<span>'+job.review+'</span></div>' +
+          '<div class="job-mark">'+ICONS.pin+'<span>'+job.loc+'</span></div>' +
+        '</div>' +
+        '<p class="job-created">'+job.created+'</p>' +
+        '<div class="job-actions">' +
+          '<button data-respond="'+job.id+'">Откликнуться</button>' +
+          '<button data-call="'+job.id+'">Позвонить</button>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function bindJobCard(root, job){
+    var heart = root.querySelector('[data-heart="'+job.id+'"]');
+    if(heart) heart.onclick = function(e){
+      e.stopPropagation();
+      state.favorites[job.id] = !state.favorites[job.id];
+      toast(state.favorites[job.id] ? "Добавлено в избранное" : "Убрано из избранного");
+      renderJobCard(); renderOverlaysIfOpen();
+    };
+    var respond = root.querySelector('[data-respond="'+job.id+'"]');
+    if(respond) respond.onclick = function(e){
+      e.stopPropagation();
+      if(state.responses.indexOf(job.id) === -1){
+        state.responses.push(job.id);
+        updateResponsesBadge();
+        toast("Отклик отправлен!");
+      } else {
+        toast("Вы уже откликнулись на эту вакансию");
+      }
+    };
+    var call = root.querySelector('[data-call="'+job.id+'"]');
+    if(call) call.onclick = function(e){ e.stopPropagation(); toast("Показан номер работодателя"); };
+    var titleArea = root.querySelector(".job-price");
+    if(titleArea) titleArea.style.cursor = "pointer";
+    root.querySelectorAll(".job-line,.job-desc,.job-marks,.job-created").forEach(function(el){
+      el.style.cursor = "pointer";
+      el.onclick = function(){ openJobDetail(job); };
+    });
+    if(titleArea) titleArea.onclick = function(e){
+      if(e.target.closest("[data-heart]")) return;
+      openJobDetail(job);
+    };
+  }
+
+  function renderJobCard(){
+    var job = JOBS[0];
+    $("jobCardMount").innerHTML = jobCardHTML(job);
+    bindJobCard($("jobCardMount"), job);
+  }
+
+  function updateResponsesBadge(){
+    var b = $("responsesBadge");
+    if(state.responses.length){ b.style.display="flex"; b.textContent = state.responses.length; }
+    else { b.style.display = "none"; }
+  }
+
+  /* ---------- overlays ---------- */
+  function overlayShell(id, title, bodyHTML, onBack){
+    $(id).innerHTML =
+      '<div class="overlay-header"><button class="icon-btn" data-close>'+ICONS.arrowLeft+'</button><h3 class="overlay-title">'+title+'</h3></div>'+
+      '<div class="overlay-body">'+bodyHTML+'</div>';
+    $(id).querySelector("[data-close]").onclick = function(){ closeOverlay(id); if(onBack) onBack(); };
+  }
+
+  function openJobDetail(job){
+    overlayShell("ovJob", "Вакансия", jobCardHTML(job, true));
+    bindJobCard($("ovJob"), job);
+    openOverlay("ovJob");
+  }
+  function renderOverlaysIfOpen(){
+    if($("ovJob").classList.contains("is-open")){
+      var idMatch = $("ovJob").querySelector("[data-heart]");
+      if(idMatch){
+        var job = JOBS.find(function(j){return j.id === +idMatch.getAttribute("data-heart");});
+        if(job){ overlayShell("ovJob","Вакансия", jobCardHTML(job,true)); bindJobCard($("ovJob"), job); }
+      }
+    }
+  }
+
+  function openAllJobs(){
+    var html = JOBS.map(function(j){
+      return '<div style="border-bottom:1px solid var(--border-soft);padding-bottom:12px;margin-bottom:12px;">' + jobCardHTML(j) + '</div>';
+    }).join('');
+    overlayShell("ovJobs", "Все вакансии", html);
+    JOBS.forEach(function(j){ bindJobCard($("ovJobs"), j); });
+    openOverlay("ovJobs");
+  }
+
+  function openAllCats(){
+    overlayShell("ovCats", "Категории", catListHTML());
+    Array.prototype.forEach.call($("ovCats").querySelectorAll(".cat-card"), function(c,i){
+      c.style.cursor="pointer";
+      c.onclick = function(){ closeOverlay("ovCats"); toast("Фильтр по категории применён"); };
+    });
+    openOverlay("ovCats");
+  }
+
+  function openChat(){
+    var html =
+      '<div style="display:flex;flex-direction:column;height:100%;">' +
+      '<div style="flex:1;overflow-y:auto;padding:14px 4px;">' +
+        '<div class="chat-msg them">Здравствуйте! Смотрели ваш отклик на «Водитель-курьер». Готовы обсудить график?</div>' +
+        '<div class="chat-msg me">Да, здравствуйте! Интересует плавающий график, 5-6 смен в неделю подойдёт?</div>' +
+        '<div class="chat-msg them">Подойдёт. Сможете подъехать на инструктаж завтра к 10:00 в Парголово?</div>' +
+      '</div>' +
+      '<div class="chat-input-row"><input placeholder="Сообщение" id="chatInput"><button id="chatSend">Отпр.</button></div>' +
+      '</div>';
+    overlayShell("ovChat", "Яндекс еда", html);
+    $("ovChat").querySelector(".overlay-body").style.padding = "0 12px";
+    $("ovChat").querySelector(".overlay-body").style.display = "flex";
+    $("ovChat").querySelector(".overlay-body").style.flexDirection = "column";
+    $("chatSend").onclick = function(){
+      var v = $("chatInput").value.trim();
+      if(!v) return;
+      toast("Демо: отправка сообщений недоступна");
+      $("chatInput").value = "";
+    };
+    openOverlay("ovChat");
+  }
+
+  function openPrefs(){
+    var html =
+      '<div class="field"><label>Какую работу вы ищете</label><input placeholder="Например, водитель, продавец" id="prefRole"></div>' +
+      '<div class="field"><label>Желаемый доход, ₽/мес</label><input placeholder="От 60 000" id="prefSalary"></div>' +
+      '<div class="field"><label>График</label><div class="pill-row">' +
+        ['Полный день','Сменный','Подработка','Удалённо'].map(function(p,i){return '<span class="pill'+(i===0?' is-selected':'')+'" data-pill>'+p+'</span>';}).join('') +
+      '</div></div>' +
+      '<button class="highlight-btn" id="savePrefs">Готово</button>';
+    overlayShell("ovPrefs", "Ваши пожелания", html);
+    Array.prototype.forEach.call($("ovPrefs").querySelectorAll("[data-pill]"), function(p){
+      p.onclick = function(){
+        Array.prototype.forEach.call($("ovPrefs").querySelectorAll("[data-pill]"), function(o){o.classList.remove("is-selected");});
+        p.classList.add("is-selected");
+      };
+    });
+    $("savePrefs").onclick = function(){ closeOverlay("ovPrefs"); toast("Пожелания сохранены — подберём вакансии под них"); };
+    openOverlay("ovPrefs");
+  }
+
+  /* ---------- kabinet ---------- */
+  function kabinetTabHTML(tab){
+    if(tab === "about"){
+      return '<div class="field"><label>Фамилия</label><div class="val">Ермаков</div></div>' +
+        '<div class="field"><label>Имя</label><div class="val">Денис</div></div>' +
+        '<div class="field"><label>Пол</label><div class="pill-row">' +
+        '<span class="pill is-selected">Мужской</span><span class="pill">Женский</span></div></div>';
+    }
+    if(tab === "resume"){
+      return '<div class="field"><label>Профессия</label><div class="val">Продуктовый дизайнер</div></div>' +
+        '<div class="field"><label>Опыт работы</label><div class="val">3–6 лет</div></div>' +
+        '<div class="field"><label>Ожидаемая зарплата</label><div class="val">от 150 000 ₽</div></div>' +
+        '<button class="highlight-btn" id="editResume">Редактировать резюме</button>';
+    }
+    // responses
+    if(!state.responses.length){
+      return '<div class="empty">'+ICONS.empty+'<div>Пока нет откликов.<br>Найдите вакансию и нажмите «Откликнуться»</div></div>';
+    }
+    return state.responses.map(function(id){
+      var j = JOBS.find(function(x){return x.id===id;});
+      return '<div class="response-row"><div class="dot"></div><div><b>'+j.title+'</b><span>'+j.price+' · Отправлено, ожидает ответа</span></div></div>';
+    }).join('');
+  }
+
+  function renderKabinet(){
+    var tabs = [["about","Обо мне"],["resume","Резюме"],["responses","Отклики"]];
+    var tabsHTML = '<div class="kabinet-tabs">' + tabs.map(function(t){
+      return '<button class="ktab'+(state.kabinetTab===t[0]?' is-active':'')+'" data-ktab="'+t[0]+'">'+t[1]+'</button>';
+    }).join('') + '</div>';
+    $("ovCabinet").innerHTML =
+      '<div class="overlay-header"><button class="icon-btn" data-close>'+ICONS.arrowLeft+'</button><h3 class="overlay-title">Личный кабинет</h3></div>' +
+      tabsHTML +
+      '<div class="overlay-body" id="kabinetBody">'+kabinetTabHTML(state.kabinetTab)+'</div>';
+    $("ovCabinet").querySelector("[data-close]").onclick = function(){ closeOverlay("ovCabinet"); };
+    Array.prototype.forEach.call($("ovCabinet").querySelectorAll("[data-ktab]"), function(btn){
+      btn.onclick = function(){
+        state.kabinetTab = btn.getAttribute("data-ktab");
+        renderKabinet();
+      };
+    });
+    var editBtn = $("ovCabinet").querySelector("#editResume");
+    if(editBtn) editBtn.onclick = function(){ toast("Демо: редактирование резюме недоступно"); };
+  }
+  function openKabinet(tab){
+    state.kabinetTab = tab || "about";
+    renderKabinet();
+    openOverlay("ovCabinet");
+  }
+
+  /* ---------- tab placeholders ---------- */
+  function renderTabViews(){
+    var favIds = Object.keys(state.favorites).filter(function(k){return state.favorites[k];}).map(Number);
+    if(favIds.length){
+      $("favScroll").innerHTML = favIds.map(function(id){
+        var j = JOBS.find(function(x){return x.id===id;});
+        return '<div style="padding:16px 12px 0;">'+jobCardHTML(j)+'</div>';
+      }).join('');
+      favIds.forEach(function(id){ bindJobCard($("favScroll"), JOBS.find(function(x){return x.id===id;})); });
+    } else {
+      $("favScroll").innerHTML = '<div class="empty">'+ICONS.empty+'<div>Пока нет избранных вакансий.<br>Нажмите на сердечко у вакансии</div></div>';
+    }
+
+    $("adsScroll").innerHTML = '<div class="empty">Раздел «Объявления» — за пределами фокуса этого прототипа (речь о категории «Работа»)</div>';
+
+    $("msgScroll").innerHTML = '<div style="padding:16px;">' +
+      '<div class="response-row"><div class="dot"></div><div><b>Яндекс еда</b><span>Готовы обсудить график? · вчера</span></div></div>' +
+      '<div class="response-row"><div class="dot" style="background:var(--ink-3);"></div><div><b>Wildberries</b><span>Спасибо за отклик, мы свяжемся · 2 дня назад</span></div></div>' +
+      '</div>';
+
+    $("profScroll").innerHTML =
+      '<div style="padding:20px 16px;">' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">' +
+        '<div style="width:52px;height:52px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:20px;">🙂</div>' +
+        '<div><b style="display:block;font-size:16px;">Денис Ермаков</b><span style="font-size:13px;color:var(--ink-3);">На Авито с 2021 · рейтинг 4.9</span></div>' +
+      '</div>' +
+      ["Личные данные","Способы оплаты","Настройки уведомлений","Безопасность","Выйти из аккаунта"].map(function(i){
+        return '<div class="response-row"><span style="font-size:15px;color:var(--ink);">'+i+'</span></div>';
+      }).join('') +
+      '<p style="font-size:12px;color:var(--ink-3);margin-top:14px;">Это общий профиль Авито — не путать с «Кабинетом» соискателя, там резюме и отклики.</p>' +
+      '</div>';
+  }
+
+  function switchTab(tab){
+    state.currentTab = tab;
+    ["search","fav","ads","msg","prof"].forEach(function(t){
+      $(t==="search"?"homeScroll":t+"Scroll").style.display = (t===tab) ? "block" : "none";
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".tabitem"), function(btn){
+      btn.classList.toggle("is-active", btn.getAttribute("data-tab") === tab);
+    });
+  }
+
+  /* ---------- persona ---------- */
+  var PERSONA_NOTES = {
+    novice: "Сценарий «Новичок»: фильтры пустые (нет истории поиска), верхний блок показывает общий объём вакансий в городе и предлагает указать пожелания.",
+    active: "Сценарий «Активный»: сохранён предыдущий поиск («Менеджер +1»), верхний блок показывает статус по уже отправленным откликам."
+  };
+
+  function applyPersona(p){
+    state.persona = p;
+    Array.prototype.forEach.call(document.querySelectorAll(".persona-switch button"), function(b){
+      b.classList.toggle("is-active", b.getAttribute("data-persona") === p);
+    });
+    $("personaNote").textContent = PERSONA_NOTES[p];
+    renderFilters();
+    renderHighlight();
+    renderCategories();
+  }
+
+  /* ---------- wire static controls ---------- */
+  $("btnBack").onclick = function(){ toast("Это корневой экран прототипа"); };
+  $("btnSearch").onclick = function(){
+    overlayShell("ovJobs", "Поиск по вакансиям", '<input class="val" style="border:none;" placeholder="Например, водитель, кладовщик" autofocus>' +
+      '<p style="font-size:13px;color:var(--ink-3);margin-top:16px;">История</p>' +
+      ["Продавец-консультант","Курьер пешком","Подработка вечером"].map(function(q){
+        return '<div class="response-row" style="cursor:pointer;"><span style="font-size:15px;">'+q+'</span></div>';
+      }).join(''));
+    openOverlay("ovJobs");
+  };
+  $("tabHireRole").onclick = function(){ toast("Раздел «Ищу сотрудников» — вне фокуса этого прототипа"); };
+  $("btnAllCats").onclick = openAllCats;
+  $("btnAllJobs").onclick = openAllJobs;
+  $("qResume").onclick = function(){ openKabinet("resume"); };
+  $("qResponses").onclick = function(){ openKabinet("responses"); };
+  $("qCabinet").onclick = function(){ openKabinet("about"); };
+
+  Array.prototype.forEach.call(document.querySelectorAll(".tabitem"), function(btn){
+    btn.onclick = function(){ switchTab(btn.getAttribute("data-tab")); };
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".persona-switch button"), function(btn){
+    btn.onclick = function(){ applyPersona(btn.getAttribute("data-persona")); };
+  });
+
+  $("btnRestart").onclick = function(){
+    state.favorites = {}; state.responses = []; state.kabinetTab = "about";
+    updateResponsesBadge(); renderJobCard(); renderTabViews();
+    ["ovJob","ovCabinet","ovChat","ovPrefs","ovCats","ovJobs"].forEach(closeOverlay);
+    switchTab("search");
+    toast("Прототип сброшен");
+  };
+
+  /* ---------- init ---------- */
+  applyPersona("novice");
+  renderJobCard();
+  renderTabViews();
+  updateResponsesBadge();
+
+})();
+</script>
+</body>
+</html>
