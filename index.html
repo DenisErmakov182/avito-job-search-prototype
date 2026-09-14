@@ -71,16 +71,11 @@
   a{color:inherit;}
 
   .wrap{
-    max-width:1180px;
+    max-width:480px;
     margin:0 auto;
-    padding:48px 24px 96px;
-    display:grid;
-    grid-template-columns: minmax(0,460px) 375px;
-    gap:56px;
-    align-items:start;
-  }
-  @media (max-width: 900px){
-    .wrap{grid-template-columns:1fr; justify-items:center; padding:32px 16px 72px;}
+    padding:32px 16px 64px;
+    display:flex;
+    justify-content:center;
   }
 
   .intro{padding-top:8px;}
@@ -429,30 +424,11 @@
 
 <div class="wrap">
 
-  <div class="intro">
-    <p class="eyebrow">Тестовое · Авито «Работа»</p>
-    <h1>Кликабельный прототип первого экрана</h1>
-    <p class="lede">Живая HTML-версия макета из Figma — не картинка, а рабочий интерфейс. Переключайте сценарий ниже: у «Новичка» и «Активного» пользователя разный верхний блок, разные категории и сохранённые фильтры.</p>
-
+  <div class="phone-stage">
     <div class="persona-switch" role="tablist" aria-label="Сценарий">
       <button type="button" data-persona="novice" class="is-active">Новичок</button>
       <button type="button" data-persona="active">Активный</button>
     </div>
-    <p class="persona-note" id="personaNote"></p>
-
-    <ul class="checklist">
-      <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Тапните по вакансии, категории или фильтру — экраны настоящие, не заглушки</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Панель «Резюме / Отклики / Кабинет» и таб-бар снизу — зафиксированы, не скроллятся с контентом</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>«Откликнуться» реально добавляет запись в «Кабинет → Отклики» и красный счётчик</span></li>
-    </ul>
-
-    <div class="meta-row">
-      <span>Дизайн — Figma</span><span>·</span>
-      <a href="https://www.figma.com/design/ZuNyQIOdscj99fMpPveCSb/%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B5-%D0%B0%D0%B2%D0%B8%D1%82%D0%BE" target="_blank" rel="noopener">Открыть исходный файл →</a>
-    </div>
-  </div>
-
-  <div class="phone-stage">
     <div class="phone">
       <div class="phone-screen" id="phoneScreen">
         <div class="statusbar">
@@ -1043,7 +1019,6 @@
     Array.prototype.forEach.call(document.querySelectorAll(".persona-switch button"), function(b){
       b.classList.toggle("is-active", b.getAttribute("data-persona") === p);
     });
-    $("personaNote").textContent = PERSONA_NOTES[p];
     renderFilters();
     renderHighlight();
     renderCategories();
