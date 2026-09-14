@@ -571,17 +571,17 @@
     responses: [],
     filters: {
       novice: [
-        {key:"Москва", selected:false},
-        {key:"Тип занятости", selected:false},
-        {key:"Опыт", selected:false},
-        {key:"Расстояние", selected:false}
+        {category:"Москва", key:"Москва", selected:false},
+        {category:"Тип занятости", key:"Тип занятости", selected:false},
+        {category:"Опыт", key:"Опыт", selected:false},
+        {category:"Расстояние", key:"Расстояние", selected:false}
       ],
       active: [
         {key:"Менеджер +1", selected:true, locked:true},
-        {key:"Москва", selected:false},
-        {key:"Тип занятости", selected:false},
-        {key:"Опыт", selected:false},
-        {key:"Расстояние", selected:false}
+        {category:"Москва", key:"Москва", selected:false},
+        {category:"Тип занятости", key:"Тип занятости", selected:false},
+        {category:"Опыт", key:"Опыт", selected:false},
+        {category:"Расстояние", key:"Расстояние", selected:false}
       ]
     },
     kabinetTab: "about",
@@ -619,11 +619,7 @@
     var html = '<button class="fbtn icon-only" id="fltIcon">' + ICONS.sliders + '</button>';
     html += '<button class="fbtn icon-only" id="sortIcon">' + ICONS.sort + '</button>';
     list.forEach(function(f, i){
-      if(f.selected){
-        html += '<button class="fbtn" data-fi="'+i+'">'+f.key+'<span class="x">'+ICONS.x+'</span></button>';
-      } else {
-        html += '<button class="fbtn" data-fi="'+i+'">'+f.key+'<span class="chev">'+ICONS.chev+'</span></button>';
-      }
+      html += '<button class="fbtn" data-fi="'+i+'">'+f.key+'<span class="chev">'+ICONS.chev+'</span></button>';
     });
     $("filtersRow").innerHTML = html;
 
@@ -651,14 +647,11 @@
       btn.onclick = function(){
         var i = +btn.getAttribute("data-fi");
         var f = list[i];
-        if(f.selected && !f.locked){
-          f.selected = false; renderFilters(); toast("Фильтр «"+f.key+"» сброшен"); return;
-        }
         if(f.locked){ toast("«"+f.key+"» — из сохранённого поиска"); return; }
-        var options = FILTER_OPTIONS[f.key] || ["Вариант 1","Вариант 2","Вариант 3"];
-        openSheet('<div class="grip"></div><h3>'+f.key+'</h3>' +
+        var options = FILTER_OPTIONS[f.category] || ["Вариант 1","Вариант 2","Вариант 3"];
+        openSheet('<div class="grip"></div><h3>'+f.category+'</h3>' +
           options.map(function(o,oi){
-            return '<button class="sheet-option'+(oi===0?' is-selected':'')+'" data-opt="'+oi+'">'+o+ICONS.check+'</button>';
+            return '<button class="sheet-option'+(o===f.key?' is-selected':'')+'" data-opt="'+oi+'">'+o+ICONS.check+'</button>';
           }).join(''));
         Array.prototype.forEach.call(document.querySelectorAll("[data-opt]"), function(btn2){
           btn2.onclick = function(){
