@@ -61,7 +61,7 @@
   }
 
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0;overflow-x:hidden;}
   body{
     background:var(--chrome-bg);
     color:var(--chrome-text);
@@ -76,6 +76,11 @@
     padding:32px 16px 64px;
     display:flex;
     justify-content:center;
+  }
+  @media (max-width:430px){
+    .wrap{padding:16px 8px 32px;}
+    .phone{padding:8px;border-radius:44px;}
+    .phone-screen{border-radius:34px;}
   }
 
   .intro{padding-top:8px;}
@@ -425,10 +430,6 @@
 <div class="wrap">
 
   <div class="phone-stage">
-    <div class="persona-switch" role="tablist" aria-label="Сценарий">
-      <button type="button" data-persona="novice" class="is-active">Новичок</button>
-      <button type="button" data-persona="active">Активный</button>
-    </div>
     <div class="phone">
       <div class="phone-screen" id="phoneScreen">
         <div class="statusbar">
@@ -556,8 +557,6 @@
         <div class="toast" id="toast"></div>
       </div>
     </div>
-    <p class="tabbar-hint">375×812 — фактический размер макета в Figma</p>
-    <button class="restart-btn" id="btnRestart">Сбросить прототип</button>
   </div>
 
 </div>
@@ -1048,14 +1047,6 @@
   Array.prototype.forEach.call(document.querySelectorAll(".persona-switch button"), function(btn){
     btn.onclick = function(){ applyPersona(btn.getAttribute("data-persona")); };
   });
-
-  $("btnRestart").onclick = function(){
-    state.favorites = {}; state.responses = []; state.kabinetTab = "about";
-    updateResponsesBadge(); renderJobCard(); renderTabViews();
-    ["ovJob","ovCabinet","ovChat","ovPrefs","ovCats","ovJobs"].forEach(closeOverlay);
-    switchTab("search");
-    toast("Прототип сброшен");
-  };
 
   /* ---------- init ---------- */
   applyPersona("novice");
