@@ -698,9 +698,9 @@
 
   function catListHTML(){
     var cats = CATEGORIES[state.persona];
-    return '<div class="cat-row" style="flex-wrap:wrap;overflow:visible;">' + cats.concat(CATEGORIES.novice.filter(function(c){return !cats.find(function(x){return x.name===c.name;});})).map(function(c){
+    return '<div class="cat-row" style="flex-wrap:wrap;overflow:visible;row-gap:8px;">' + cats.concat(CATEGORIES.novice.filter(function(c){return !cats.find(function(x){return x.name===c.name;});})).map(function(c){
       var d = ICON_DIMS[c.icon];
-      return '<div class="cat-card" style="width:100%;">'+
+      return '<div class="cat-card" style="width:calc(50% - 4px);">'+
         '<p class="name">'+c.name+'</p>'+
         '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
         '<img class="icon-ill" src="assets/'+c.icon+'.svg" width="'+d[0]+'" height="'+d[1]+'" alt="">'+
