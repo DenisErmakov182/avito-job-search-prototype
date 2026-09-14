@@ -667,22 +667,12 @@
   }
 
   /* ---------- render: highlight card ---------- */
-  var QUICK_ROLES = ["Водитель","Курьер","Продавец","Разнорабочий"];
-
   function renderHighlight(){
     if(state.persona === "novice"){
       $("hlTitle").innerHTML = 'Более 10 000 вакансий в <a href="javascript:void(0)">Москве</a>';
       $("hlSub").textContent = "В среднем каждый день добавляется 200 новых вакансий";
-      $("hlChips").style.display = "flex";
-      $("hlChips").innerHTML = QUICK_ROLES.map(function(r){ return '<span class="pill" data-role="'+r+'">'+r+'</span>'; }).join('');
-      Array.prototype.forEach.call($("hlChips").querySelectorAll("[data-role]"), function(chip){
-        chip.onclick = function(){
-          Array.prototype.forEach.call($("hlChips").querySelectorAll("[data-role]"), function(c){ c.classList.remove("is-selected"); });
-          chip.classList.add("is-selected");
-          toast("Показываем вакансии: " + chip.getAttribute("data-role"));
-        };
-      });
-      $("hlBtn").textContent = "Указать пожелания подробнее";
+      $("hlChips").style.display = "none";
+      $("hlBtn").textContent = "Указать пожелания";
       $("hlBtn").onclick = openPrefs;
     } else {
       $("hlChips").style.display = "none";
