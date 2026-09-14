@@ -235,13 +235,15 @@
   .cat-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
   .cat-row::-webkit-scrollbar{display:none;}
   .cat-card{
-    flex:none; width:158px; background:var(--surface-2); border-radius:var(--radius-md);
-    padding:12px; position:relative; overflow:hidden; text-align:left; border:none; cursor:pointer;
+    flex:none; width:250px; background:var(--surface-2); border-radius:var(--radius-md);
+    padding:12px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+    text-align:left; border:none; cursor:pointer;
     font-family:var(--font-ui);
   }
-  .cat-card .emoji{position:absolute;right:2px;top:-2px;font-size:34px;filter:saturate(1.05);}
-  .cat-card .name{font-size:16px;font-weight:600;letter-spacing:-.32px;color:var(--ink);margin:0 0 4px;}
-  .cat-card .n{font-size:13px;color:var(--ink-3);letter-spacing:.03px;display:block;}
+  .cat-card .info{min-width:0;display:flex;flex-direction:column;}
+  .cat-card .icon-ill{flex:none;width:40px;height:auto;max-height:50px;margin-top:2px;}
+  .cat-card .name{font-size:16px;font-weight:600;letter-spacing:-.32px;color:var(--ink);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cat-card .n{font-size:13px;color:var(--ink-3);letter-spacing:.03px;display:block;white-space:nowrap;}
 
   .job-card{padding:0 4px;}
   .job-price{padding:2px 12px 0;display:flex;align-items:flex-start;gap:8px;}
@@ -522,19 +524,19 @@
 
   var CATEGORIES = {
     novice: [
-      {name:"Ремонт", n:"1010 вакансий", rate:"1200₽/час, ср. ставка", emoji:"🔨"},
-      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", emoji:"📦"},
-      {name:"Вело-курьер", n:"23 вакансии", rate:"200₽/км, ср. ставка", emoji:"🚲"},
-      {name:"Авто-курьер", n:"40 вакансий", rate:"1000₽/день, ср. ставка", emoji:"🚚"},
-      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", emoji:"🪑"},
-      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", emoji:"📈"},
-      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", emoji:"🛍️"}
+      {name:"Ремонт", n:"1010 вакансий", rate:"1200₽/час, ср. ставка", icon:"hammer"},
+      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", icon:"box"},
+      {name:"Вело-курьер", n:"23 вакансии", rate:"200₽/км, ср. ставка", icon:"bike"},
+      {name:"Авто-курьер", n:"40 вакансий", rate:"1000₽/день, ср. ставка", icon:"truck"},
+      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", icon:"chair"},
+      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", icon:"graph"},
+      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", icon:"bag"}
     ],
     active: [
-      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", emoji:"📈"},
-      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", emoji:"🪑"},
-      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", emoji:"🛍️"},
-      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", emoji:"📦"}
+      {name:"Продажи", n:"15 вакансий", rate:"50 000₽/мес, ср. ставка", icon:"graph"},
+      {name:"Офис", n:"61 вакансия", rate:"50 000₽/мес, ср. ставка", icon:"chair"},
+      {name:"Маркетплейсы", n:"525 вакансий", rate:"1200₽/день, ср. ставка", icon:"bag"},
+      {name:"Доставка", n:"600 вакансий", rate:"200₽/км, ср. ставка", icon:"box"}
     ]
   };
 
@@ -683,9 +685,9 @@
     var cats = CATEGORIES[state.persona];
     $("catRow").innerHTML = cats.map(function(c, i){
       return '<button class="cat-card" data-cat="'+i+'">'+
-        '<div class="emoji">'+c.emoji+'</div>'+
-        '<p class="name">'+c.name+'</p>'+
-        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
+        '<span class="info"><p class="name">'+c.name+'</p>'+
+        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span></span>'+
+        '<img class="icon-ill" src="assets/'+c.icon+'.png" alt="">'+
         '</button>';
     }).join('');
     Array.prototype.forEach.call(document.querySelectorAll("#catRow [data-cat]"), function(btn, i){
@@ -696,10 +698,10 @@
   function catListHTML(){
     var cats = CATEGORIES[state.persona];
     return '<div class="cat-row" style="flex-wrap:wrap;overflow:visible;">' + cats.concat(CATEGORIES.novice.filter(function(c){return !cats.find(function(x){return x.name===c.name;});})).map(function(c){
-      return '<div class="cat-card" style="width:47%;">'+
-        '<div class="emoji">'+c.emoji+'</div>'+
-        '<p class="name">'+c.name+'</p>'+
-        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span>'+
+      return '<div class="cat-card" style="width:100%;">'+
+        '<span class="info"><p class="name">'+c.name+'</p>'+
+        '<span class="n">'+c.n+'</span><span class="n">'+c.rate+'</span></span>'+
+        '<img class="icon-ill" src="assets/'+c.icon+'.png" alt="">'+
         '</div>';
     }).join('') + '</div>';
   }
