@@ -415,6 +415,7 @@
                   <p class="highlight-title" id="hlTitle"></p>
                   <p class="highlight-sub" id="hlSub"></p>
                 </div>
+                <div class="pill-row" id="hlChips" style="display:none;"></div>
                 <button class="highlight-btn" id="hlBtn"></button>
               </div>
             </div>
@@ -666,13 +667,25 @@
   }
 
   /* ---------- render: highlight card ---------- */
+  var QUICK_ROLES = ["Водитель","Курьер","Продавец","Разнорабочий"];
+
   function renderHighlight(){
     if(state.persona === "novice"){
       $("hlTitle").innerHTML = 'Более 10 000 вакансий в <a href="javascript:void(0)">Москве</a>';
       $("hlSub").textContent = "В среднем каждый день добавляется 200 новых вакансий";
-      $("hlBtn").textContent = "Указать пожелания";
+      $("hlChips").style.display = "flex";
+      $("hlChips").innerHTML = QUICK_ROLES.map(function(r){ return '<span class="pill" data-role="'+r+'">'+r+'</span>'; }).join('');
+      Array.prototype.forEach.call($("hlChips").querySelectorAll("[data-role]"), function(chip){
+        chip.onclick = function(){
+          Array.prototype.forEach.call($("hlChips").querySelectorAll("[data-role]"), function(c){ c.classList.remove("is-selected"); });
+          chip.classList.add("is-selected");
+          toast("Показываем вакансии: " + chip.getAttribute("data-role"));
+        };
+      });
+      $("hlBtn").textContent = "Указать пожелания подробнее";
       $("hlBtn").onclick = openPrefs;
     } else {
+      $("hlChips").style.display = "none";
       $("hlTitle").textContent = "2 работодателя ответили";
       $("hlSub").textContent = "Перейдите в чат, там можно обсудить детали работы, график и тд.";
       $("hlBtn").textContent = "Перейти в чат";
