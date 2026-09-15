@@ -927,7 +927,7 @@
   }
 
   function renderKabinet(){
-    var tabs = [["about","Обо мне"],["resume","Резюме"],["responses","Отклики"]];
+    var tabs = [["resume","Резюме"],["responses","Отклики"],["about","Обо мне"]];
     var tabsHTML = '<div class="kabinet-tabs">' + tabs.map(function(t){
       return '<button class="ktab'+(state.kabinetTab===t[0]?' is-active':'')+'" data-ktab="'+t[0]+'">'+t[1]+'</button>';
     }).join('') + '</div>';
