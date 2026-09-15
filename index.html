@@ -556,7 +556,19 @@
     {id:3, title:"Менеджер по продажам (входящие заявки)", price:"70 000 ₽ + % от сделок", tags:"График 5/2 · Офис · Обучение предоставляется",
       employer:"ГК Автолидер", verified:false, review:"Новый работодатель на Авито", loc:"Юго-Западная, 5 мин.", created:"Создано 2 дня назад", category:"Продажи"},
     {id:4, title:"Оператор call-центра", price:"55 000–65 000 ₽ в месяц", tags:"Сменный график · Удалённо · Без опыта",
-      employer:"Skyeng", verified:true, review:"Есть мнения о работодателе", loc:"Удалённо", created:"Создано 3 дня назад", category:"Офис"}
+      employer:"Skyeng", verified:true, review:"Есть мнения о работодателе", loc:"Удалённо", created:"Создано 3 дня назад", category:"Офис"},
+    {id:5, title:"Разнорабочий на стройку", price:"2500 ₽ за смену", tags:"Вахтой · Проживание предоставляется · Без опыта",
+      employer:"СтройГрупп", verified:false, review:"Требуются срочно", loc:"Новогиреево, 10 мин.", created:"Создано 5 часов назад", category:"Ремонт"},
+    {id:6, title:"Вело-курьер по центру города", price:"2800–3500 ₽ за смену", tags:"Свободный график · Выплаты каждый день · Без опыта",
+      employer:"Яндекс еда", verified:true, review:"Есть мнения о работодателе", loc:"Чистые пруды, 3 мин.", created:"Создано сегодня в 09:15", category:"Вело-курьер"},
+    {id:7, title:"Продавец-консультант в магазин техники", price:"65 000 ₽ в месяц", tags:"Сменный график 2/2 · Официально · Обучение предоставляется",
+      employer:"DNS", verified:true, review:"312 откликов на этой неделе", loc:"Медведково, 6 мин.", created:"Создано 2 часа назад", category:"Продажи"},
+    {id:8, title:"Грузчик на склад (ночные смены)", price:"3200 ₽ за смену", tags:"Ночные смены · Выплаты каждый день · Без опыта",
+      employer:"Ozon", verified:true, review:"Есть мнения о работодателе", loc:"Котельники, 15 мин.", created:"Создано вчера в 20:05", category:"Маркетплейсы"},
+    {id:9, title:"Автослесарь", price:"80 000–120 000 ₽ в месяц", tags:"Полный день · Официально · Опыт от 1 года",
+      employer:"Шиномонтаж №1", verified:false, review:"Новый работодатель на Авито", loc:"Люблино, 8 мин.", created:"Создано 3 дня назад", category:"Ремонт"},
+    {id:10, title:"Уборщик(-ца) офисных помещений", price:"45 000 ₽ в месяц", tags:"Полный день · Официально · Без опыта",
+      employer:"Клининг Сервис", verified:true, review:"89 откликов на этой неделе", loc:"Аэропорт, 5 мин.", created:"Создано сегодня в 07:30", category:"Офис"}
   ];
 
   var FILTER_OPTIONS = {
@@ -615,23 +627,24 @@
   $("sheetBackdrop").addEventListener("click", closeSheet);
 
   /* ---------- render: filters ---------- */
-  function renderFilters(){
+  function renderFilterChips(containerId, onChange){
     var list = state.filters[state.persona];
-    var html = '<button class="fbtn icon-only" id="fltIcon">' + ICONS.sliders + '</button>';
-    html += '<button class="fbtn icon-only" id="sortIcon">' + ICONS.sort + '</button>';
+    var html = '<button class="fbtn icon-only" data-flt>' + ICONS.sliders + '</button>';
+    html += '<button class="fbtn icon-only" data-srt>' + ICONS.sort + '</button>';
     list.forEach(function(f, i){
       html += '<button class="fbtn" data-fi="'+i+'">'+f.key+'<span class="chev">'+ICONS.chev+'</span></button>';
     });
-    $("filtersRow").innerHTML = html;
+    var root = $(containerId);
+    root.innerHTML = html;
 
-    $("fltIcon").onclick = function(){
+    root.querySelector("[data-flt]").onclick = function(){
       openSheet('<div class="grip"></div><h3>Все фильтры</h3>' +
         '<div class="pill-row" style="margin-bottom:6px;">' +
         ['Полная занятость','Можно из дома','С трудоустройством','Без опыта','Ежедневные выплаты'].map(function(p){return '<span class="pill">'+p+'</span>';}).join('') +
         '</div><button class="highlight-btn" style="margin-top:18px;" id="applyFilters">Показать вакансии</button>');
       $("applyFilters").onclick = function(){ closeSheet(); toast("Фильтры применены"); };
     };
-    $("sortIcon").onclick = function(){
+    root.querySelector("[data-srt]").onclick = function(){
       openSheet('<div class="grip"></div><h3>Сортировать по</h3>' +
         ["По актуальности","По зарплате: сначала выше","По релевантности","По расстоянию"].map(function(o,i){
           return '<button class="sheet-option'+(i===0?' is-selected':'')+'" data-sort="'+i+'">'+o+ICONS.check+'</button>';
@@ -644,7 +657,7 @@
       });
     };
 
-    Array.prototype.forEach.call(document.querySelectorAll("#filtersRow [data-fi]"), function(btn){
+    Array.prototype.forEach.call(root.querySelectorAll("[data-fi]"), function(btn){
       btn.onclick = function(){
         var i = +btn.getAttribute("data-fi");
         var f = list[i];
@@ -659,11 +672,17 @@
             f.selected = true;
             f.key = btn2.textContent.trim();
             closeSheet(); renderFilters();
+            if(onChange) onChange();
             toast("Выбрано: " + f.key);
           };
         });
       };
     });
+  }
+
+  function renderFilters(){
+    renderFilterChips("filtersRow");
+    if($("ovJobsFilters")) renderFilterChips("ovJobsFilters");
   }
 
   /* ---------- render: highlight card ---------- */
@@ -768,9 +787,10 @@
   }
 
   function renderJobCard(){
-    var job = JOBS[0];
-    $("jobCardMount").innerHTML = jobCardHTML(job);
-    bindJobCard($("jobCardMount"), job);
+    $("jobCardMount").innerHTML = JOBS.map(function(j){
+      return '<div style="border-bottom:1px solid var(--border-soft);padding-bottom:12px;margin-bottom:12px;">' + jobCardHTML(j) + '</div>';
+    }).join('');
+    JOBS.forEach(function(j){ bindJobCard($("jobCardMount"), j); });
   }
 
   function updateResponsesBadge(){
@@ -802,12 +822,32 @@
     }
   }
 
-  function openAllJobs(){
-    var html = JOBS.map(function(j){
+  function renderOvJobsList(query){
+    var q = (query || "").trim().toLowerCase();
+    var filtered = q ? JOBS.filter(function(j){ return j.title.toLowerCase().indexOf(q) !== -1; }) : JOBS;
+    var mount = $("ovJobsList");
+    if(!filtered.length){
+      mount.innerHTML = '<div class="empty">'+ICONS.empty+'<div>Ничего не нашлось по запросу «'+query+'»</div></div>';
+      return;
+    }
+    mount.innerHTML = filtered.map(function(j){
       return '<div style="border-bottom:1px solid var(--border-soft);padding-bottom:12px;margin-bottom:12px;">' + jobCardHTML(j) + '</div>';
     }).join('');
-    overlayShell("ovJobs", "Все вакансии", html);
-    JOBS.forEach(function(j){ bindJobCard($("ovJobs"), j); });
+    filtered.forEach(function(j){ bindJobCard(mount, j); });
+  }
+
+  function openAllJobs(){
+    var head =
+      '<div style="display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:14px;padding:0 12px;height:48px;">' +
+        '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+        '<input id="ovJobsSearch" placeholder="Поиск по вакансиям" style="border:none;background:none;flex:1;font-size:16px;font-family:inherit;outline:none;color:var(--ink);">' +
+      '</div>' +
+      '<div class="filters-row" id="ovJobsFilters" style="padding:12px 0 0;"></div>' +
+      '<div id="ovJobsList" style="margin-top:16px;"></div>';
+    overlayShell("ovJobs", "Все вакансии", head);
+    renderFilterChips("ovJobsFilters", function(){ renderOvJobsList($("ovJobsSearch").value); });
+    renderOvJobsList("");
+    $("ovJobsSearch").oninput = function(){ renderOvJobsList(this.value); };
     openOverlay("ovJobs");
   }
 
