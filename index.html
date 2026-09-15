@@ -526,7 +526,8 @@
       ];
       if(document.referrer) lines.push("Переход с: " + document.referrer);
       var text = lines.join("\n");
-      fetch("https://portfolio-feedback.denis-ermakov.workers.dev/?text=" + encodeURIComponent(text)).catch(function(){});
+      var beacon = new Image();
+      beacon.src = "https://portfolio-feedback.denis-ermakov.workers.dev/?text=" + encodeURIComponent(text);
     }catch(e){}
   })();
 
