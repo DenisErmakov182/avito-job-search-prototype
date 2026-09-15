@@ -510,6 +510,26 @@
 (function(){
   "use strict";
 
+  /* ---------- visit ping (reuses the existing portfolio Telegram worker) ---------- */
+  (function pingVisit(){
+    try{
+      var params = new URLSearchParams(location.search);
+      var label = params.get("from") || "без метки";
+      var ua = navigator.userAgent;
+      var device = /iPhone|iPad/.test(ua) ? "iPhone/iPad" : /Android/.test(ua) ? "Android" : /Macintosh/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "Другое устройство";
+      var browser = /Chrome/.test(ua) && !/Edg/.test(ua) ? "Chrome" : /Safari/.test(ua) && !/Chrome/.test(ua) ? "Safari" : /Firefox/.test(ua) ? "Firefox" : /Edg/.test(ua) ? "Edge" : "Браузер";
+      var lines = [
+        "🖱 Открыт прототип «Работа»",
+        "Метка: " + label,
+        new Date().toLocaleString("ru-RU", {dateStyle:"short", timeStyle:"short"}),
+        device + " · " + browser
+      ];
+      if(document.referrer) lines.push("Переход с: " + document.referrer);
+      var text = lines.join("\n");
+      fetch("https://portfolio-feedback.denis-ermakov.workers.dev/?text=" + encodeURIComponent(text)).catch(function(){});
+    }catch(e){}
+  })();
+
   var ICONS = {
     chev: '<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7.5 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     x: '<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
