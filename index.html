@@ -288,7 +288,7 @@
   .tabs{display:flex;justify-content:space-between;padding:6px 0 0;}
   .tabitem{
     flex:1; display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 0 6px;
-    background:none;border:none;cursor:pointer;position:relative; font-family:var(--font-ui);
+    background:none;border:none;cursor:default;position:relative; font-family:var(--font-ui);
   }
   .tabitem svg{color:#858585;}
   .tabitem.is-active svg{color:var(--accent);}
@@ -1029,9 +1029,7 @@
   $("qResponses").onclick = function(){ openKabinet("responses"); };
   $("qCabinet").onclick = function(){ openKabinet("about"); };
 
-  Array.prototype.forEach.call(document.querySelectorAll(".tabitem"), function(btn){
-    btn.onclick = function(){ switchTab(btn.getAttribute("data-tab")); };
-  });
+  // Таб-бар — только визуальная демонстрация, переключение между разделами не в фокусе прототипа.
 
   Array.prototype.forEach.call(document.querySelectorAll(".persona-switch button"), function(btn){
     btn.onclick = function(){ applyPersona(btn.getAttribute("data-persona")); };
