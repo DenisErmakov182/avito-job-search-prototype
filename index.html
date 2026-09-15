@@ -845,8 +845,7 @@
           '<input id="ovJobsSearch" placeholder="Поиск по вакансиям" style="border:none;background:none;flex:1;font-size:16px;font-family:inherit;outline:none;color:var(--ink);">' +
         '</div>' +
       '</div>' +
-      '<div class="filters-row" id="ovJobsFilters" style="padding:12px 16px 0;"></div>' +
-      '<div class="overlay-body"><div id="ovJobsList"></div></div>';
+      '<div class="overlay-body"><div class="filters-row" id="ovJobsFilters" style="padding:0 0 12px;"></div><div id="ovJobsList"></div></div>';
     $("ovJobs").querySelector("[data-close]").onclick = function(){ closeOverlay("ovJobs"); };
     renderFilterChips("ovJobsFilters", function(){ renderOvJobsList($("ovJobsSearch").value); });
     renderOvJobsList("");
