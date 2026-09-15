@@ -153,6 +153,7 @@
   .meta-row a:hover{text-decoration:underline;}
 
   /* ---------- App shell (fills the real viewport, no device mockup) ---------- */
+  html,body{background:var(--chrome-bg);}
   .phone-screen{
     position:fixed; inset:0;
     background:#fff;
@@ -162,6 +163,17 @@
     padding-bottom:env(safe-area-inset-bottom);
     padding-left:env(safe-area-inset-left);
     padding-right:env(safe-area-inset-right);
+  }
+  /* На узких экранах (реальный телефон) — во весь экран, без рамки.
+     На широких (десктоп) — центрированная карточка размером с телефон. */
+  @media (min-width:481px){
+    .phone-screen{
+      inset:auto; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:min(430px, 100vw); height:min(932px, 100vh);
+      border-radius:40px;
+      box-shadow:var(--chrome-shadow);
+      overflow:hidden;
+    }
   }
 
   /* ---------- App content ---------- */
