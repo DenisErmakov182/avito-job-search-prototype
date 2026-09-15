@@ -310,7 +310,7 @@
   }
   .overlay.is-open{transform:translateX(0);}
   .overlay-header{
-    display:flex; align-items:center; gap:12px; padding:58px 16px 12px; flex:none;
+    display:flex; align-items:center; gap:12px; padding:12px 16px; flex:none;
     border-bottom:1px solid var(--border-soft);
   }
   .overlay-title{font-size:17px;font-weight:600;letter-spacing:-.43px;margin:0;color:var(--ink);}
@@ -837,14 +837,17 @@
   }
 
   function openAllJobs(){
-    var head =
-      '<div style="display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:14px;padding:0 12px;height:48px;">' +
-        '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-        '<input id="ovJobsSearch" placeholder="Поиск по вакансиям" style="border:none;background:none;flex:1;font-size:16px;font-family:inherit;outline:none;color:var(--ink);">' +
+    $("ovJobs").innerHTML =
+      '<div class="overlay-header">' +
+        '<button class="icon-btn" data-close>'+ICONS.arrowLeft+'</button>' +
+        '<div style="flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:14px;padding:0 12px;height:44px;">' +
+          '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+          '<input id="ovJobsSearch" placeholder="Поиск по вакансиям" style="border:none;background:none;flex:1;font-size:16px;font-family:inherit;outline:none;color:var(--ink);">' +
+        '</div>' +
       '</div>' +
-      '<div class="filters-row" id="ovJobsFilters" style="padding:12px 0 0;"></div>' +
-      '<div id="ovJobsList" style="margin-top:16px;"></div>';
-    overlayShell("ovJobs", "Все вакансии", head);
+      '<div class="filters-row" id="ovJobsFilters" style="padding:12px 16px 0;"></div>' +
+      '<div class="overlay-body"><div id="ovJobsList"></div></div>';
+    $("ovJobs").querySelector("[data-close]").onclick = function(){ closeOverlay("ovJobs"); };
     renderFilterChips("ovJobsFilters", function(){ renderOvJobsList($("ovJobsSearch").value); });
     renderOvJobsList("");
     $("ovJobsSearch").oninput = function(){ renderOvJobsList(this.value); };
